@@ -178,6 +178,7 @@ const Profile = () => {
                     id="outlined-adornment-password"
                     type={values.showPassword ? "text" : "password"}
                     value={values.password}
+                    name="password"
                     onChange={handleChange("password")}
                     endAdornment={
                       <InputAdornment position="end">
