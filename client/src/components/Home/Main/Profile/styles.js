@@ -2,6 +2,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import { green, red, grey } from "@material-ui/core/colors";
 
 export default makeStyles((theme) => ({
+  profileContainer: {
+    width: "100%",
+    margin: 0,
+  },
   dropZoneContainer: {
     padding: theme.spacing(2.5),
     width: "100%",
@@ -40,7 +44,7 @@ export default makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%,-50%)",
-    fontSize: theme.spacing(8),
+    fontSize: "4rem",
     color: grey[500],
   },
   dropZoneActions: {
@@ -50,10 +54,16 @@ export default makeStyles((theme) => ({
   dropZoneActionClear: {
     "&:hover": { backgroundColor: red[700] },
     backgroundColor: red[500],
+    color: grey[50],
   },
   dropZoneActionDone: {
     "&:hover": { backgroundColor: green[700] },
     backgroundColor: green[500],
+    color: grey[50],
+  },
+  dropZoneDeleteAccount: { float: "right" },
+  [theme.breakpoints.down("xs")]: {
+    dropZoneDeleteAccount: { float: "initial" },
   },
   userInfoPaper: { height: "100%" },
   userInfoForm: { height: "inherit" },

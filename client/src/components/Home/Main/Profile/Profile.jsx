@@ -67,7 +67,15 @@ const Profile = () => {
   };
 
   return (
-    <Grid spacing={3} container>
+    <Grid className={classes.profileContainer} spacing={3} container>
+      <Grid xs={12} align="center" item>
+        <Button
+          className={`${classes.dropZoneDeleteAccount} ${classes.dropZoneActionClear}`}
+          variant="contained"
+        >
+          Delete Account
+        </Button>
+      </Grid>
       <Grid className={classes.dropZoneGrid} xs={12} sm={4} item>
         <Paper className={classes.dropZoneContainer} elevation={3}>
           {fileImage.preview && (
@@ -120,7 +128,7 @@ const Profile = () => {
             noValidate
           >
             <Grid className={classes.userInfoContainer} spacing={3} container>
-              <Grid xs={12} sm={6} item>
+              <Grid xs={12} sm={12} md={6} item>
                 <TextField
                   // error
                   // id="outlined-error-helper-text"
@@ -133,7 +141,7 @@ const Profile = () => {
                   fullWidth
                 />
               </Grid>
-              <Grid xs={12} sm={6} item>
+              <Grid xs={12} sm={12} md={6} item>
                 <TextField
                   // error
                   // id="outlined-error-helper-text"
@@ -192,22 +200,17 @@ const Profile = () => {
               </Grid>
               <Grid xs={12} align="center" item>
                 <Button
+                  className={classes.dropZoneActionDone}
                   variant="contained"
-                  color="primary"
                   size="large"
                   type="submit"
                 >
-                  Submit
+                  Update
                 </Button>
               </Grid>
             </Grid>
           </form>
         </Paper>
-      </Grid>
-      <Grid xs={12} align="center" item>
-        <Button variant="contained" color="secondary" size="large">
-          Delete Account
-        </Button>
       </Grid>
     </Grid>
   );

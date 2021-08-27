@@ -9,6 +9,7 @@ export default makeStyles((theme) => ({
   small: {
     width: theme.spacing(3),
     height: theme.spacing(3),
+    fontSize: theme.spacing(2),
   },
   large: {
     width: theme.spacing(7),

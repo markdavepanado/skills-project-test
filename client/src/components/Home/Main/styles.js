@@ -5,6 +5,11 @@ export default makeStyles((theme) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
   },
+  [theme.breakpoints.down("sm")]: {
+    content: {
+      padding: theme.spacing(3, 0),
+    },
+  },
   toolbar: {
     display: "flex",
     alignItems: "center",
