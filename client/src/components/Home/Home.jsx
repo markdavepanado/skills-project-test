@@ -6,7 +6,7 @@ import CustomDrawer from "./Drawer/CustomDrawer";
 import Main from "./Main/Main";
 import useStyles from "./styles";
 
-const Home = () => {
+const Home = ({ setTriggerAuth }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
@@ -22,7 +22,11 @@ const Home = () => {
     <div className={classes.root}>
       <CssBaseline />
       <CustomAppBar open={open} handleDrawerOpen={handleDrawerOpen} />
-      <CustomDrawer open={open} handleDrawerClose={handleDrawerClose} />
+      <CustomDrawer
+        open={open}
+        handleDrawerClose={handleDrawerClose}
+        setTriggerAuth={setTriggerAuth}
+      />
       <Main />
     </div>
   );

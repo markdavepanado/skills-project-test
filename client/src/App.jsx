@@ -1,11 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 
+import { FETCH_USER_FROM_STORAGE } from "./redux/constants/actionTypes";
 import Home from "./components/Home/Home";
 import Auth from "./components/Auth/Auth";
 
 export default function MiniDrawer() {
-  const user = true;
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    dispatch({ type: FETCH_USER_FROM_STORAGE });
+  }, []);
+
   return (
     <BrowserRouter>
       <Switch>
@@ -14,14 +22,14 @@ export default function MiniDrawer() {
           path="/dashboard"
           exact
           component={() =>
-            user ? <Home /> : <Redirect to="/authentication" />
+            user?.email ? <Home /> : <Redirect to="/authentication" />
           }
         />
         <Route
           path="/profile"
           exact
           component={() =>
-            user ? <Home /> : <Redirect to="/authentication" />
+            user?.email ? <Home /> : <Redirect to="/authentication" />
           }
         />
         <Route
@@ -39,7 +47,11 @@ export default function MiniDrawer() {
           exact
           component={() => <Redirect to="/authentication" />}
         />
-        <Route path="/authentication" exact component={() => <Auth />} />
+        <Route
+          path="/authentication"
+          exact
+          component={() => (user?.email ? <Redirect to="" /> : <Auth />)}
+        />
       </Switch>
     </BrowserRouter>
   );

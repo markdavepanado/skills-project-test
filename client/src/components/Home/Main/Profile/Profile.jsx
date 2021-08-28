@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import clsx from "clsx";
 import {
   Grid,
@@ -20,11 +21,21 @@ import ClearIcon from "@material-ui/icons/Clear";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 
+import { updateUserInfo } from "../../../../redux/actions/user";
 import useStyles from "./styles";
 
 const Profile = () => {
+  const dispatch = useDispatch();
   const classes = useStyles();
+  const { user } = useSelector((state) => state.user);
   const [fileImage, setFileImage] = useState([]);
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [formData, setFormData] = useState({
+    firstname: user?.firstname || "",
+    lastname: user?.lastname || "",
+    email: user?.email || "",
+    password: "",
+  });
 
   const dropZone = useDropzone({
     accept: "image/jpeg, image/png",
@@ -53,17 +64,9 @@ const Profile = () => {
     setFileImage([]);
   };
 
-  const [values, setValues] = React.useState({
-    password: "",
-    showPassword: false,
-  });
-
-  const handleChange = (prop) => (event) => {
-    setValues({ ...values, [prop]: event.target.value });
-  };
-
-  const handleClickShowPassword = () => {
-    setValues({ ...values, showPassword: !values.showPassword });
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    user?.email && dispatch(updateUserInfo(user?.id, formData));
   };
 
   return (
@@ -110,6 +113,8 @@ const Profile = () => {
             <input {...dropZone.getInputProps()} disabled={fileImage.preview} />
             {fileImage.preview ? (
               <img className={classes.fileImage} src={fileImage.preview} />
+            ) : user?.picture?.url ? (
+              <img className={classes.fileImage} src={user?.picture?.url} />
             ) : (
               <AddAPhotoIcon
                 className={classes.dropZoneIcon}
@@ -123,7 +128,7 @@ const Profile = () => {
         <Paper className={classes.userInfoPaper} elevation={3}>
           <form
             className={classes.userInfoForm}
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={handleFormSubmit}
             autoComplete="off"
             noValidate
           >
@@ -132,11 +137,14 @@ const Profile = () => {
                 <TextField
                   // error
                   // id="outlined-error-helper-text"
+                  value={formData.firstname}
+                  onChange={(e) =>
+                    setFormData({ ...formData, firstname: e.target.value })
+                  }
                   type="text"
                   label="First Name"
                   name="firstname"
                   // helperText="Incorrect entry."
-                  autoFocus
                   variant="outlined"
                   fullWidth
                 />
@@ -145,6 +153,10 @@ const Profile = () => {
                 <TextField
                   // error
                   // id="outlined-error-helper-text"
+                  value={formData.lastname}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastname: e.target.value })
+                  }
                   type="text"
                   label="Last Name"
                   name="lastname"
@@ -157,6 +169,10 @@ const Profile = () => {
                 <TextField
                   // error
                   // id="outlined-error-helper-text"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   type="email"
                   label="Email"
                   name="email"
@@ -175,19 +191,23 @@ const Profile = () => {
                     Password
                   </InputLabel>
                   <OutlinedInput
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
+                    type={showPassword ? "text" : "password"}
                     id="outlined-adornment-password"
-                    type={values.showPassword ? "text" : "password"}
-                    value={values.password}
                     name="password"
-                    onChange={handleChange("password")}
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton
                           aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
+                          onClick={() =>
+                            setShowPassword((prevState) => !prevState)
+                          }
                           edge="end"
                         >
-                          {values.showPassword ? (
+                          {showPassword ? (
                             <VisibilityIcon />
                           ) : (
                             <VisibilityOffIcon />

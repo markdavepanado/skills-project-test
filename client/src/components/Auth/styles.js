@@ -11,6 +11,8 @@ export default makeStyles((theme) => ({
     maxWidth: "50%",
     padding: theme.spacing(5),
     borderRadius: theme.spacing(2.5),
+    position: "relative",
+    overflow: "hidden",
   },
   [theme.breakpoints.down("xs")]: { paper: { maxWidth: "100%" } },
   gridContainer: { width: "100%", margin: 0 },
@@ -19,9 +21,12 @@ export default makeStyles((theme) => ({
     letterSpacing: "0.2rem",
     margin: theme.spacing(0, 0, 3),
   },
-  authButtonLink: { textDecoration: "none" },
   switchLink: { textDecoration: "none" },
   margin: {
     margin: theme.spacing(1),
+  },
+  disabled: {
+    pointerEvents: "none",
+    opacity: 0.4,
   },
 }));

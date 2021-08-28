@@ -1,4 +1,5 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import clsx from "clsx";
 import { useTheme } from "@material-ui/core/styles";
@@ -16,12 +17,19 @@ import ListItemText from "@material-ui/core/ListItemText";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
+import { LOGOUT } from "../../../redux/constants/actionTypes";
 import CustomAvatar from "../Avatar/CustomAvatar";
 import useStyles from "./styles";
 
-const CustomDrawer = ({ open, handleDrawerClose }) => {
+const CustomDrawer = ({ open, handleDrawerClose, setTriggerAuth }) => {
+  const dispatch = useDispatch();
   const theme = useTheme();
   const classes = useStyles();
+  const { user } = useSelector((state) => state.user);
+
+  const handleLogout = () => {
+    dispatch({ type: LOGOUT });
+  };
 
   return (
     <Drawer
@@ -55,12 +63,13 @@ const CustomDrawer = ({ open, handleDrawerClose }) => {
           <ListItem button>
             <ListItemIcon>
               <CustomAvatar
-                alt="Dabeloper"
-                src="/broken-image.jpg"
+                alt={`${user.firstname} ${user.lastname}`}
+                // src="/broken-image.jpg"
+                src={user.picture.url}
                 variant="rounded"
               />
             </ListItemIcon>
-            <ListItemText primary="Profile" />
+            <ListItemText primary={`${user.firstname} ${user.lastname}`} />
           </ListItem>
         </Link>
       </List>
@@ -74,7 +83,7 @@ const CustomDrawer = ({ open, handleDrawerClose }) => {
             <ListItemText primary="Dashboard" />
           </ListItem>
         </Link>
-        <Link className={classes.link} to="/authentication">
+        <Link className={classes.link} onClick={handleLogout} to="#">
           <ListItem button>
             <ListItemIcon>
               <ExitToAppIcon />

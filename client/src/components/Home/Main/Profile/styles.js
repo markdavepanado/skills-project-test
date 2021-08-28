@@ -38,6 +38,9 @@ export default makeStyles((theme) => ({
     },
     width: "100%",
     objectFit: "contain",
+    position: "absolute",
+    top: "50%",
+    transform: "translateY(-50%)",
   },
   dropZoneIcon: {
     position: "absolute",
