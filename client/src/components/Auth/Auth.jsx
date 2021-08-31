@@ -25,6 +25,7 @@ import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import { register, login } from "../../redux/actions/user";
 import LinearProgress from "../LinearProgress/CustomLinearProgress";
 import useStyles from "./styles";
+import useAppStyles from "../../styles";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -44,6 +45,7 @@ const Auth = () => {
   const location = useLocation();
   const query = useQuery();
   const classes = useStyles();
+  const appClasses = useAppStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [isRegister, setIsRegister] = useState(query.get("register") || false);
   const { isLoading } = useSelector((state) => state.user);
@@ -112,7 +114,7 @@ const Auth = () => {
     <Grow in>
       <Container className={classes.container}>
         <Paper
-          className={`${classes.paper} ${isLoading && classes.disabled}`}
+          className={`${classes.paper} ${isLoading && appClasses.disabled}`}
           elevation={3}
         >
           {isLoading && <LinearProgress />}

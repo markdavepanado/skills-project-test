@@ -25,8 +25,4 @@ export default makeStyles((theme) => ({
   margin: {
     margin: theme.spacing(1),
   },
-  disabled: {
-    pointerEvents: "none",
-    opacity: 0.4,
-  },
 }));

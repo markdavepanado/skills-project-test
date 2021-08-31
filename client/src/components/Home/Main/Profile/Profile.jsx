@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useSnackbar } from "notistack";
 import clsx from "clsx";
 import {
   Grid,
   Paper,
-  Typography,
   Button,
   ButtonGroup,
   TextField,
@@ -13,6 +13,7 @@ import {
   OutlinedInput,
   InputAdornment,
   IconButton,
+  LinearProgress,
 } from "@material-ui/core";
 import { useDropzone } from "react-dropzone";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
@@ -23,19 +24,23 @@ import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 
 import { updateUserInfo } from "../../../../redux/actions/user";
 import useStyles from "./styles";
+import useAppStyles from "../../../../styles";
 
 const Profile = () => {
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
-  const { user } = useSelector((state) => state.user);
+  const appClasses = useStyles();
+  const { user, isLoading } = useSelector((state) => state.user);
   const [fileImage, setFileImage] = useState([]);
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     firstname: user?.firstname || "",
     lastname: user?.lastname || "",
     email: user?.email || "",
     password: "",
   });
+  const [triggerChange, setTriggerChange] = useState(false);
 
   const dropZone = useDropzone({
     accept: "image/jpeg, image/png",
@@ -60,13 +65,33 @@ const Profile = () => {
     [fileImage]
   );
 
+  useEffect(() => {
+    return () => {
+      setFormData({ ...formData, password: "" });
+      setShowPassword(false);
+      clearFileImage();
+    };
+  }, [triggerChange]);
+
   const clearFileImage = () => {
     setFileImage([]);
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    user?.email && dispatch(updateUserInfo(user?.id, formData));
+    if (user?.email) {
+      const isSuccess = await dispatch(updateUserInfo(user?.id, formData));
+      if (isSuccess.success) {
+        enqueueSnackbar("Updated Successfully!", {
+          variant: "success",
+        });
+      } else {
+        enqueueSnackbar("Update Failed!", {
+          variant: "error",
+        });
+      }
+    }
+    setTriggerChange((prevState) => !prevState);
   };
 
   return (
@@ -125,7 +150,13 @@ const Profile = () => {
         </Paper>
       </Grid>
       <Grid xs={12} sm={8} item>
-        <Paper className={classes.userInfoPaper} elevation={3}>
+        <Paper
+          className={`${classes.userInfoPaper} ${
+            isLoading && appClasses.disabled
+          }`}
+          elevation={3}
+        >
+          {isLoading && <LinearProgress />}
           <form
             className={classes.userInfoForm}
             onSubmit={handleFormSubmit}
@@ -137,6 +168,7 @@ const Profile = () => {
                 <TextField
                   // error
                   // id="outlined-error-helper-text"
+                  disabled={isLoading}
                   value={formData.firstname}
                   onChange={(e) =>
                     setFormData({ ...formData, firstname: e.target.value })
@@ -153,6 +185,7 @@ const Profile = () => {
                 <TextField
                   // error
                   // id="outlined-error-helper-text"
+                  disabled={isLoading}
                   value={formData.lastname}
                   onChange={(e) =>
                     setFormData({ ...formData, lastname: e.target.value })
@@ -169,6 +202,7 @@ const Profile = () => {
                 <TextField
                   // error
                   // id="outlined-error-helper-text"
+                  disabled={isLoading}
                   value={formData.email}
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
@@ -191,6 +225,7 @@ const Profile = () => {
                     Password
                   </InputLabel>
                   <OutlinedInput
+                    disabled={isLoading}
                     value={formData.password}
                     onChange={(e) =>
                       setFormData({ ...formData, password: e.target.value })
@@ -202,6 +237,7 @@ const Profile = () => {
                       <InputAdornment position="end">
                         <IconButton
                           aria-label="toggle password visibility"
+                          disabled={isLoading}
                           onClick={() =>
                             setShowPassword((prevState) => !prevState)
                           }
@@ -222,6 +258,7 @@ const Profile = () => {
               <Grid xs={12} align="center" item>
                 <Button
                   className={classes.dropZoneActionDone}
+                  disabled={isLoading}
                   variant="contained"
                   size="large"
                   type="submit"

@@ -35,9 +35,11 @@ export const login = (formData) => async (dispatch) => {
 
 export const updateUserInfo = (id, formData) => async (dispatch) => {
   try {
+    dispatch({ type: START_LOADING });
     const { data } = await API.updateUserInfo(id, formData);
-    console.log(data);
-    // dispatch({ type: UPDATE_USER_INFO, payload: data });
+    dispatch({ type: UPDATE_USER_INFO, payload: data });
+    dispatch({ type: END_LOADING });
+    return data;
   } catch (error) {
     console.log(error);
   }

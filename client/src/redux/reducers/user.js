@@ -31,6 +31,7 @@ const userReducer = (state = initialState, action) => {
         user: JSON.parse(localStorage.getItem("user"))?.user || "",
       };
     case UPDATE_USER_INFO: {
+      localStorage.setItem("user", JSON.stringify({ ...action?.payload }));
       return { ...state, user: { ...state.user, ...[action?.payload] } };
     }
     case REGISTER:

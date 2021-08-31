@@ -5,78 +5,47 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
 export const register = async (req, res, next) => {
-  if (!req.body.firstname)
+  if (
+    !req.body.firstname ||
+    typeof req.body.firstname == "undefined" ||
+    req.body.firstname == null
+  )
     return res.status(400).json({
       success: false,
       key: "firstname",
       message: "Cannot process request because of the missing firstname",
     });
-  if (typeof req.body.firstname == "undefined")
-    return res.status(400).json({
-      success: false,
-      key: "firstname",
-      message: "Cannot process request because of the undefined firstname",
-    });
-  if (req.body.firstname == null)
-    return res.status(400).json({
-      success: false,
-      key: "firstname",
-      message: "Cannot process request because of the null firstname",
-    });
-  if (!req.body.lastname)
+  if (
+    !req.body.lastname ||
+    typeof req.body.lastname == "undefined" ||
+    req.body.lastname == null
+  )
     return res.status(400).json({
       success: false,
       key: "lastname",
       message: "Cannot process request because of the missing lastname",
     });
-  if (typeof req.body.lastname == "undefined")
-    return res.status(400).json({
-      success: false,
-      key: "lastname",
-      message: "Cannot process request because of the undefined lastname",
-    });
-  if (req.body.lastname == null)
-    return res.status(400).json({
-      success: false,
-      key: "lastname",
-      message: "Cannot process request because of the null lastname",
-    });
-  if (!req.body.email)
+  if (
+    !req.body.email ||
+    typeof req.body.email == "undefined" ||
+    req.body.email == null
+  )
     return res.status(400).json({
       success: false,
       key: "email",
       message: "Cannot process request because of the missing email",
     });
-  if (typeof req.body.email == "undefined")
-    return res.status(400).json({
-      success: false,
-      key: "email",
-      message: "Cannot process request because of the undefined email",
-    });
-  if (req.body.email == null)
-    return res.status(400).json({
-      success: false,
-      key: "email",
-      message: "Cannot process request because of the null email",
-    });
-  if (!req.body.password)
+  if (
+    !req.body.password ||
+    typeof req.body.password == "undefined" ||
+    req.body.password == null
+  )
     return res.status(400).json({
       success: false,
       key: "password",
       message: "Cannot process request because of the missing password",
     });
-  if (typeof req.body.password == "undefined")
-    return res.status(400).json({
-      success: false,
-      key: "password",
-      message: "Cannot process request because of the undefined password",
-    });
-  if (req.body.password == null)
-    return res.status(400).json({
-      success: false,
-      key: "password",
-      message: "Cannot process request because of the null password",
-    });
+
   const firstname = req.body.firstname;
   const lastname = req.body.lastname;
   const email = req.body.email;
@@ -116,41 +85,25 @@ export const register = async (req, res, next) => {
 };
 
 export const login = async (req, res, next) => {
-  if (!req.body.email)
+  if (
+    !req.body.email ||
+    typeof req.body.email == "undefined" ||
+    req.body.email == null
+  )
     return res.status(400).json({
       success: false,
       key: "email",
       message: "Cannot process request because of the missing email",
     });
-  if (typeof req.body.email == "undefined")
-    return res.status(400).json({
-      success: false,
-      key: "email",
-      message: "Cannot process request because of the undefined email",
-    });
-  if (req.body.email == null)
-    return res.status(400).json({
-      success: false,
-      key: "email",
-      message: "Cannot process request because of the null email",
-    });
-  if (!req.body.password)
+  if (
+    !req.body.password ||
+    typeof req.body.password == "undefined" ||
+    req.body.password == null
+  )
     return res.status(400).json({
       success: false,
       key: "password",
       message: "Cannot process request because of the missing password",
-    });
-  if (typeof req.body.password == "undefined")
-    return res.status(400).json({
-      success: false,
-      key: "password",
-      message: "Cannot process request because of the undefined password",
-    });
-  if (req.body.password == null)
-    return res.status(400).json({
-      success: false,
-      key: "password",
-      message: "Cannot process request because of the null password",
     });
 
   const email = req.body.email;
@@ -207,17 +160,39 @@ export const updateUserInfo = async (req, res, next) => {
 
   for (const [key, value] of Object.entries(req.body)) {
     if (value.trim()) {
-      value.trim() !== isUserExist[key.trim()] &&
+      if (value.trim() !== isUserExist[key.trim()]) {
+        if (key.trim() === "password") {
+          toBeUpdatedList.push({
+            [key.trim()]: await bcrypt.hash(value.trim(), 12),
+          });
+        }
         toBeUpdatedList.push({ [key.trim()]: value.trim() });
+      }
     }
   }
   let mergeObjects = Object.assign({}, ...toBeUpdatedList);
 
   try {
-    const updatedUser = await User.findByIdAndUpdate(_id, mergeObjects, {
-      new: true,
-    });
-    return res.status(200).json({ success: true, user: updatedUser });
+    const updatedUser = await User.findByIdAndUpdate(
+      _id,
+      "password" in mergeObjects
+        ? {
+            ...mergeObjects,
+            password: await bcrypt.hash(mergeObjects.password.trim(), 12),
+          }
+        : mergeObjects,
+      {
+        new: true,
+      }
+    );
+
+    const token = jwt.sign(
+      { email: isUserExist.email, id: isUserExist._id },
+      "authToken",
+      { expiresIn: "1h" }
+    );
+
+    return res.status(200).json({ success: true, user: updatedUser, token });
   } catch (error) {
     res.status(500).json({ success: false, message: "Something went wrong" });
   }
